@@ -1,2 +1,5 @@
 secrets.json
+client_secret.json
+sheets.googleapis.com-nodejs-quickstart.json
 *.iml
+config/local.json

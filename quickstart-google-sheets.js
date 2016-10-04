@@ -4,6 +4,7 @@ var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var _ = require('lodash');
 var moment = require('moment');
+var config = require('config');
 
 var secrets = '';
 try {
@@ -16,7 +17,7 @@ try {
 
 // Twillio Stuff:
 
-var FAKE = true;
+var FAKE = config.fakeSms;
 
 // Real:
 var accountSid = secrets.twilioAccountSid;
@@ -47,8 +48,9 @@ function sendText(who, message, contacts) {
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
-var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
-    process.env.USERPROFILE) + '/.credentials/';
+//var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
+//    process.env.USERPROFILE) + '/.credentials/';
+var TOKEN_DIR = process.cwd() + '/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
 // Load client secrets from a local file.
