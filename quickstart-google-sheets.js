@@ -3,16 +3,18 @@ var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var _ = require('lodash');
-var moment = require('moment');
+var moment = require('moment-timezone');
 var config = require('config');
 
 var secrets = '';
 try {
-    secrets = JSON.parse(fs.readFileSync('./secrets.json'));
+    secrets = JSON.parse(fs.readFileSync('./secrets/secrets.json'));
 } catch (e) {
     console.log('Could not parse the secrets.json file. Cannot proceed.');
     process.exit();
 }
+
+var TIMEZONE = 'America/Vancouver';
 
 
 // Twillio Stuff:
@@ -30,8 +32,7 @@ function sendText(who, message, contacts) {
     var contact = _.find(contacts, row => row[0] === who);
     var phoneNumber = '+1' + contact[1].replace(/[^\d]/g, '');
     if (FAKE) {
-        console.log(phoneNumber, message);
-        console.log('---');
+        console.log(`\nDEBUG - calling: sendText(): "${message}" (count: ${message.length}) =>`, phoneNumber);
     } else {
         client.messages.create({
             body: message,
@@ -50,13 +51,14 @@ function sendText(who, message, contacts) {
 var SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
 //var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
 //    process.env.USERPROFILE) + '/.credentials/';
-var TOKEN_DIR = process.cwd() + '/';
+var TOKEN_DIR = process.cwd() + '/secrets/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
 // Load client secrets from a local file.
 
 function sendRemindersIfItIsTime() {
-    fs.readFile('client_secret.json', function processClientSecrets(err, content) {
+    console.log(`\nDEBUG - calling: sendRemindersIfItIsTime()`);
+    fs.readFile('./secrets/client_secret.json', function processClientSecrets(err, content) {
         if (err) {
             console.log('Error loading client secret file: ' + err);
             return;
@@ -75,6 +77,7 @@ function sendRemindersIfItIsTime() {
  * @param {function} callback The callback to call with the authorized client.
  */
 function authorize(credentials, callback) {
+    console.log(`\nDEBUG - calling: authorize()`);
     var clientSecret = credentials.installed.client_secret;
     var clientId = credentials.installed.client_id;
     var redirectUrl = credentials.installed.redirect_uris[0];
@@ -101,6 +104,7 @@ function authorize(credentials, callback) {
  *     client.
  */
 function getNewToken(oauth2Client, callback) {
+    console.log(`\nDEBUG - calling: getNewToken(), arguments:`, oauth2Client, callback);
     var authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
         scope: SCOPES
@@ -130,6 +134,7 @@ function getNewToken(oauth2Client, callback) {
  * @param {Object} token The token to store to disk.
  */
 function storeToken(token) {
+    console.log(`\nDEBUG - calling: storeToken(), arguments:`, token);
     try {
         fs.mkdirSync(TOKEN_DIR);
     } catch (err) {
@@ -145,6 +150,7 @@ var authObj = null;
 var spreadsheetId = '1KuSSE1gyCGmstAp_yrQzDiFiv_uCvruOmlPcqPBsceg';
 
 function getSheetRange (range) {
+    console.log(`\nDEBUG - calling: getSheetRange(), arguments:`, range);
     return new Promise((resolve, reject) => {
         var sheets = google.sheets('v4');
         sheets.spreadsheets.values.get({
@@ -163,6 +169,7 @@ function getSheetRange (range) {
 }
 
 function doSpreadsheetStuff(auth) {
+    console.log(`\nDEBUG - calling: doSpreadsheetStuff(), arguments:`, auth);
     authObj = auth;
 
     Promise.all([
@@ -171,7 +178,12 @@ function doSpreadsheetStuff(auth) {
             getSheetRange('Contacts!A2:B')
         ])
         .then(results => {
-            var schedule = results[0], tasks = results[1], contacts = results[2], now = moment();
+            var schedule = results[0],
+                tasks = results[1],
+                contacts = results[2],
+                now = moment().tz(TIMEZONE);
+
+            console.log(`\nDEBUG - now:`, now.format());
 
             // Helper methods:
 
@@ -229,7 +241,8 @@ function doSpreadsheetStuff(auth) {
                     .sort()
                     .forEach(row => {
                         // Set it to be only past due at the latest possible time on the assigned day:
-                        row.when = moment(row.when, 'MM/DD/YYYY');
+                        console.log(`\nDEBUG - row.when:`, moment.tz(row.when, 'MM/DD/YYYY', TIMEZONE).format());
+                        row.when = moment.tz(row.when, 'MM/DD/YYYY', TIMEZONE);
                         row.when.hour(23);
                         row.when.minute(59);
                         row.when.second(59);
@@ -252,11 +265,14 @@ function doSpreadsheetStuff(auth) {
             });
 
             // Compute past-due tasks per-roommate:
+
             var past_due = {};
             var time_to_remind = {};
 
             // Returns true if the reminder time on the correct day has past in the past hour.
             function isReminderTime(assignment) {
+                console.log(`\nDEBUG - isReminderTime():`, printAssignment(assignment));
+
                 var reminderOffsets = {
                     "Day Of": 0,
                     "Day Before": 1
@@ -277,11 +293,14 @@ function doSpreadsheetStuff(auth) {
                     .filter(offsetName => task.reminder.indexOf(offsetName) !== -1)
                     .thru(offsetInArray => reminderOffsets[offsetInArray[0]] || 0)
                     .value();
-                var reminder = moment(assignment.when)
+                var reminder = moment.tz(assignment.when, TIMEZONE)
                     .subtract(dayOffsetFromDueDate, 'days')
                     .hour(reminderHourInDay)
                     .minute(0)
                     .second(0);
+
+                console.log(`\nDEBUG - reminder time:`, reminder.format());
+
 
                 return Math.abs(moment.duration(reminder - now)) < moment.duration(30, 'minutes');
             }
@@ -297,6 +316,9 @@ function doSpreadsheetStuff(auth) {
             var urlToTaskSheet = 'http://tiny.cc/zl49ey';
             var past_due_reminder = 12; // military type for daily reminder (noon)
             var sms_length_cap = 160;
+
+            console.log(`\nDEBUG - past due:`, past_due);
+            console.log(`\nDEBUG - time to remind:`, time_to_remind);
 
             _.forEach(past_due, assignments => {
                 var formattedAssignments = [];
@@ -356,12 +378,13 @@ function doSpreadsheetStuff(auth) {
                     }
 
                     var formattedWhoElse = a.whoElse.length ?
-                        `Your partner${mt1? 's':''} in crime ${mt1? 'are':'is'} ${whoElseList}.\n` :
+                        `Your partner${!mt1? '':'s'} in crime ${!mt1? 'is':'are'} ${whoElseList}.\n` :
                         '';
 
                     smsMessage = `Hi, ${a.who}!\n`+
                         `Reminder: "${a.what}" is scheduled for ${a.when.calendar().replace(' at 11:59 PM', '').toLowerCase()}.\n`+
                         formattedWhoElse +
+                        `${urlToTaskSheet}\n`+
                         `Thanks!`;
                 } else {
                     _.forEach(assignments, (a, i) => {

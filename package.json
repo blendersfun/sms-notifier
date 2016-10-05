@@ -15,6 +15,7 @@
     "googleapis": "^13.0.0",
     "lodash": "^4.16.0",
     "moment": "^2.15.0",
+    "moment-timezone": "^0.5.5",
     "twilio": "^2.11.0"
   }
 }
