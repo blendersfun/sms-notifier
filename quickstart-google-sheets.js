@@ -181,7 +181,7 @@ function doSpreadsheetStuff(auth) {
             var schedule = results[0],
                 tasks = results[1],
                 contacts = results[2],
-                now = moment().tz(TIMEZONE);
+                now = moment.tz(TIMEZONE);
 
             console.log(`\nDEBUG - now:`, now.format());
 
@@ -314,7 +314,7 @@ function doSpreadsheetStuff(auth) {
             });
 
             var urlToTaskSheet = 'http://tiny.cc/zl49ey';
-            var past_due_reminder = 12; // military type for daily reminder (noon)
+            var past_due_reminder_hour = 12; // military type for daily reminder (noon)
             var sms_length_cap = 160;
 
             console.log(`\nDEBUG - past due:`, past_due);
@@ -344,7 +344,9 @@ function doSpreadsheetStuff(auth) {
                     smsMessage = possibleSmsMessage.length <= 160 ? possibleSmsMessage : smsMessage;
                 });
 
-                if (now.hour() > past_due_reminder && now.hour() < past_due_reminder + 1) {
+                console.log(`\nDEBUG - now:`, now.format());
+
+                if (now.hour() === past_due_reminder_hour) {
                     sendText(assignments[0].who, smsMessage, contacts);
                 }
             });
