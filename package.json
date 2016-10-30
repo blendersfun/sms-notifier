@@ -5,17 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "tsc": "tsc",
+    "postinstall": "typings install && tsc"
   },
   "author": "Aaron Moore <two.a.ron@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "config": "^1.21.0",
     "google-auth-library": "^0.9.8",
-    "googleapis": "^13.0.0",
+    "googleapis": "^14.1.0",
     "lodash": "^4.16.0",
     "moment": "^2.15.0",
     "moment-timezone": "^0.5.5",
     "twilio": "^2.11.0"
+  },
+  "devDependencies": {
+    "@types/es6-shim": "^0.31.32",
+    "typescript": "^2.0.6",
+    "typings": "^1.5.0"
   }
 }
