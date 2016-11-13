@@ -2,7 +2,7 @@
   "name": "sms-notifier",
   "version": "0.1.0",
   "description": "An SMS-based notification tool for sending out scheduled reminders based on a spreadsheet of tasks.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
@@ -12,10 +12,12 @@
   "author": "Aaron Moore <two.a.ron@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "chai": "^3.5.0",
     "config": "^1.21.0",
     "google-auth-library": "^0.9.8",
     "googleapis": "^14.1.0",
-    "lodash": "^4.16.0",
+    "lodash": "^4.16.5",
+    "mocha": "^3.1.2",
     "moment": "^2.15.0",
     "moment-timezone": "^0.5.5",
     "twilio": "^2.11.0"

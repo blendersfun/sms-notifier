@@ -9,7 +9,7 @@ export class GoogleSheets {
     static create(): Promise<GoogleSheets> {
         return FileUtils.loadJson(config.get<string>('serviceAccountConfigPath'))
             .then(json => {
-                let jwtClient = new googleapis.auth.JWT(json.client_email, null, json.private_key, [
+                let jwtClient = new googleapis.auth.JWT(json['client_email'], null, json['private_key'], [
                     'https://www.googleapis.com/auth/spreadsheets'
                 ], null);
 

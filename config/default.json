@@ -2,10 +2,13 @@
   "fakeSms": false,
   "timezone": "America/Vancouver",
   "serviceAccountConfigPath": "./secrets/My Project-0d81bca9d520.json",
+  "pastDueReminderHour": 12,
+  "twilioPhoneNumber": "+15036943429",
   "greatHouseMaintenance": {
     "googleSheetId": "1KuSSE1gyCGmstAp_yrQzDiFiv_uCvruOmlPcqPBsceg",
     "scheduleName": "Maintenance Schedule",
     "tasksName": "Task Types",
-    "contactSheetName": "Contacts"
+    "contactSheetName": "Contacts",
+    "tinyUrl": "http://tiny.cc/zl49ey"
   }
 }

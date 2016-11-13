@@ -1,6 +1,17 @@
 {
   "globalDependencies": {
     "config": "registry:dt/config#0.0.0+20160317120654",
-    "node": "registry:dt/node#6.0.0+20161019125345"
+    "express": "registry:dt/express#4.0.0+20160708185218",
+    "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161012061536",
+    "lodash": "registry:dt/lodash#4.14.0+20161004174455",
+    "mime": "registry:dt/mime#0.0.0+20160316155526",
+    "moment": "registry:dt/moment#2.11.1+20161010105546",
+    "moment-timezone": "registry:dt/moment-timezone#0.2.5+20160329220348",
+    "node": "registry:dt/node#6.0.0+20161019125345",
+    "q": "registry:dt/q#0.0.0+20161004185634",
+    "serve-static": "registry:dt/serve-static#0.0.0+20160606155157"
+  },
+  "dependencies": {
+    "twilio": "registry:dt/twilio#0.0.0+20160920144608"
   }
 }
