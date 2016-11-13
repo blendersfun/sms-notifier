@@ -1,6 +1,5 @@
 secrets
 *.iml
 config/local.json
-rebuild-and-run.sh
 dist
 typings
