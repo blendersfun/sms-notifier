@@ -34,14 +34,33 @@ export class Notifier {
     }
 
     wake() {
-        let currentReminders = this.taskSchedule.getCurrentReminders();
-        _.each(currentReminders, (message, phoneNumber) => this.sendReminder(phoneNumber, message));
+        let taskScheduleConfig = config.get<ITaskScheduleConfig>('greatHouseMaintenance');
 
         let now = moment.tz(config.get<string>('timezone')).toDate();
         let nextHour = moment(now).add(1, 'hour').minutes(0).seconds(1).toDate();
         let napTime = nextHour.valueOf() - now.valueOf();
 
-        setTimeout(() => this.wake(), napTime);
+        TaskSchedule.create(taskScheduleConfig)
+            .then(taskSchedule => {
+                let currentReminders = this.taskSchedule.getCurrentReminders();
+                if (config.get<boolean>('fakeSms')) {
+                    let currentRemindersCount = Object.keys(currentReminders).length;
+                    console.log('The current time is: ', now.toString());
+                    console.log('The current reminders count is: ', currentRemindersCount);
+                    if (currentRemindersCount) {
+                        console.log('---');
+                    }
+                }
+                _.each(currentReminders, (message, phoneNumber) => this.sendReminder(phoneNumber, message));
+
+                setTimeout(() => this.wake(), napTime);
+            })
+            .catch(() => {
+                // Do not fail to keep going just because something blew up.
+                setTimeout(() => this.wake(), napTime);
+            });
+
+
     }
 
     sendReminder(phoneNumber, messages: string|string[]) {
