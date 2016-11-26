@@ -60,7 +60,7 @@ export class TaskSchedule {
             return objVal.concat(srcVal);
         };
 
-        if (pastDueReminderHour === now.getHours() || true) {
+        if (pastDueReminderHour === now.getHours()) {
             let pastDue = this.schedule.getAssignments({
                 pastDue: true,
                 complete: false
