@@ -55,7 +55,8 @@ export class Notifier {
 
                 setTimeout(() => this.wake(), napTime);
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log('Error encountered in TaskSchedule.create() -- ', e.stack);
                 // Do not fail to keep going just because something blew up.
                 setTimeout(() => this.wake(), napTime);
             });
