@@ -49,8 +49,9 @@ export class TaskSchedule {
 
         let now = moment.tz(config.get<string>('timezone')).toDate();
         let lastHour = moment(now).subtract(1, 'hour').toDate();
-
         let pastDueReminderHour = config.get<number>('pastDueReminderHour');
+        let pastDueReminder = moment.tz(config.get<string>('timezone')).hour(pastDueReminderHour).toDate();
+
         let currentReminders = {};
 
         // A merge function that combines colliding values into a list if multiple values exist for a property:
@@ -60,7 +61,9 @@ export class TaskSchedule {
             return objVal.concat(srcVal);
         };
 
-        if (pastDueReminderHour === now.getHours()) {
+        console.log(pastDueReminder.getHours(), now.getHours());
+
+        if (pastDueReminder.getHours() === now.getHours()) {
             let pastDue = this.schedule.getAssignments({
                 pastDue: true,
                 complete: false
