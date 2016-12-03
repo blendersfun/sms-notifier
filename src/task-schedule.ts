@@ -196,7 +196,7 @@ export class TaskSchedule {
         contacts: { [value: string]: Contact },
         tinyUrl: string
     ) {
-        let dueIn = moment(task.due).calendar().replace(' at 11:59 PM', '').toLowerCase();
+        let dueIn = moment.tz(task.due, config.get<string>('timezone')).calendar().replace(' at 11:59 PM', '').toLowerCase();
         return [
             `Hi, ${person}!`,
             `Reminder: ${task.task} is scheduled for ${dueIn}.`,
@@ -238,6 +238,8 @@ export class TaskSchedule {
     }
 
     private static points(person, contactsByName: { [value: string]: Contact }): string[] {
+        let me = contactsByName[person];
+        if (me.points === null) return [];
         let contacts = _.values(contactsByName).sort((a: Contact, b: Contact) => {
             let aPoints = a.points || 0;
             let bPoints = b.points || 0;
@@ -247,7 +249,6 @@ export class TaskSchedule {
         });
         let highestPointValue = contacts[0].points || 0;
         let winners = contacts.filter((contact: Contact) => contact.points === highestPointValue);
-        let me = contactsByName[person];
         let line = `You have ${me.points} points.`;
         if (winners.indexOf(me) !== -1 && highestPointValue !== 0) {
             line += ' (And are winning)';
@@ -275,7 +276,7 @@ export class TaskSchedule {
 
     private static upcomingList(tasks: TaskAssignment[], excluded: TaskAssignment[]): string[] {
         let list = tasks.map((task: TaskAssignment, i) => {
-            let dueIn = moment(task.due).calendar().replace(' at 11:59 PM', '').toLowerCase();
+            let dueIn = moment(task.due, config.get<string>('timezone')).calendar().replace(' at 11:59 PM', '').toLowerCase();
             return ` ${i+1}. ${task.task}, ${dueIn}`;
         });
         if (excluded.length) {
