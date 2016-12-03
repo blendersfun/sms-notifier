@@ -276,7 +276,7 @@ export class TaskSchedule {
 
     private static upcomingList(tasks: TaskAssignment[], excluded: TaskAssignment[]): string[] {
         let list = tasks.map((task: TaskAssignment, i) => {
-            let dueIn = moment(task.due, config.get<string>('timezone')).calendar().replace(' at 11:59 PM', '').toLowerCase();
+            let dueIn = moment.tz(task.due, config.get<string>('timezone')).calendar().replace(' at 11:59 PM', '').toLowerCase();
             return ` ${i+1}. ${task.task}, ${dueIn}`;
         });
         if (excluded.length) {
