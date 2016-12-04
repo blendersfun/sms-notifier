@@ -21,7 +21,9 @@ export class Notifier {
             let taskSchedule = results[0], secrets = results[1];
             let twilio = new RestClient(secrets['twilioAccountSid'], secrets['twilioAuthToken']);
             return new Notifier(taskSchedule, twilio);
-        });
+        }).catch(e => {
+            console.log('Notifier.create -- error', e.stack);
+        })
     }
 
     private constructor(
