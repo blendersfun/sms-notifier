@@ -45,14 +45,15 @@ export class Notifier {
         TaskSchedule.create(taskScheduleConfig)
             .then(taskSchedule => {
                 let currentReminders = this.taskSchedule.getCurrentReminders();
-                if (config.get<boolean>('fakeSms')) {
-                    let currentRemindersCount = Object.keys(currentReminders).length;
-                    console.log('The current time is: ', now.toString());
-                    console.log('The current reminders count is: ', currentRemindersCount);
-                    if (currentRemindersCount) {
-                        console.log('---');
-                    }
+
+                // Was fakeSms only section. Enabled for debug logs.
+                let currentRemindersCount = Object.keys(currentReminders).length;
+                console.log('The current time is: ', now.toString());
+                console.log('The current reminders count is: ', currentRemindersCount);
+                if (currentRemindersCount) {
+                    console.log('---');
                 }
+
                 _.each(currentReminders, (message, phoneNumber) => this.sendReminder(phoneNumber, message));
 
                 setTimeout(() => this.wake(), napTime);
