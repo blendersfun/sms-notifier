@@ -51,6 +51,9 @@ export class ScheduleSheet extends Sheet<TaskAssignment> {
         let now = moment.tz(config.get<string>('timezone')).toDate();
 
         return this.config.data.filter((a: TaskAssignment) => {
+            if (a.due === null) {
+                return false; // Strip out comments in schedule.
+            }
             if (configObj.complete !== null) {
                 if (configObj.complete !== a.isCompleted) return false;
             }

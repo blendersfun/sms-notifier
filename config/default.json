@@ -10,5 +10,11 @@
     "tasksName": "Task Types",
     "contactSheetName": "Contacts",
     "tinyUrl": "http://tiny.cc/zl49ey"
-  }
+  },
+  "yearDivisions": [
+    "3/21",
+    "6/21",
+    "9/21",
+    "12/21"
+  ]
 }

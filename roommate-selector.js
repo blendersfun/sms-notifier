@@ -7,7 +7,7 @@ var roommates = ['Aaron',
                  'Jim',
                  'Megan',
                  'Nathan',
-                 'Ryan',
+                 'Johnny',
                  'Scott'];
 
 var up_bath_roommates = ['Aaron',
@@ -19,14 +19,14 @@ var down_hall_bath_roommates = ['Jeff',
                                 'Jim'];
 
 var down_small_bath_roommates = ['Nathan',
-                                 'Ryan'];
+                                 'Johnny'];
 
 var up_kitchen_roommates = ['Aaron',
                             'Ian',
                             'Jeff',
                             'Megan',
                             'Scott',
-                            'Ryan'];
+                            'Johnny'];
 
 var down_kitchen_roommates = ['Jim',
                               'Nathan',

@@ -44,6 +44,32 @@ export class TaskSchedule {
         private contacts: ContactsSheet
     ) {}
 
+    public getRoommateTotals() {
+        let tasksByPerson = this.getTasksByPerson();
+
+        let timeSpentByPerson = _.transform(tasksByPerson, (acc, tasks, person) => {
+            acc[person] = _.chain(<Array<string>> tasks)
+                .map(task => this.tasks.getTask(task).estimate)
+                .reduce((acc, curr) => acc + curr, 0)
+                .value();
+        }, {});
+
+        return timeSpentByPerson;
+    }
+
+    public getTasksByPerson() {
+        let tasks = this.schedule.getAssignments();
+        return _.transform(tasks, (acc, task) => {
+            _.each(task.people, person => {
+                if (acc[person] instanceof Array) {
+                    (<Array<string>> acc[person]).push(task.task);
+                } else {
+                    acc[person] = [task.task];
+                }
+            });
+        }, {});
+    }
+
     public getCurrentReminders(): {[phone: string]: string|string[]} {
         let contacts = this.contacts.getContacts();
 
@@ -60,8 +86,6 @@ export class TaskSchedule {
             if (!_.isArray(objVal)) return [objVal, srcVal];
             return objVal.concat(srcVal);
         };
-
-        console.log(pastDueReminder.getHours(), now.getHours());
 
         if (pastDueReminder.getHours() === now.getHours()) {
             let pastDue = this.schedule.getAssignments({
@@ -84,8 +108,6 @@ export class TaskSchedule {
             let upcomingReminders = TaskSchedule.formatUpcomingReminders(upcoming, contacts, this.config.tinyUrl);
             currentReminders = _.mergeWith(currentReminders, upcomingReminders, mergeArrays);
         }
-
-        //console.log(currentReminders);
 
         return currentReminders;
     }
